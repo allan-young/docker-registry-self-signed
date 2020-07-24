@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# This file is part of the docker-registry-self-signed project, which
+# is distributed under the terms of the MIT License, See the project's
+# LICENSE file for details.
+#
+# Copyright (C) 2020 Allan Young
+
+case "$1" in
+    purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+        # Once the certificate file has been removed we run
+        # update-ca-certificates to update certificates.
+        update-ca-certificates
+
+        # If necessary recreate the /usr/local/share/ca-certificates
+        # directory if the deb package removal managed to delete it.
+        if [ ! -d /usr/local/share/ca-certificates ]; then
+             mkdir -p /usr/local/share/ca-certificates
+             chown root.root /usr/local/share/ca-certificates
+             chmod 755 /usr/local/share/ca-certificates
+        fi
+        ;;
+     *)
+        # Not expected to get here.
+        echo "postrm called with unexpected argument: $1"
+        exit 0
+        ;;
+esac
+exit 0

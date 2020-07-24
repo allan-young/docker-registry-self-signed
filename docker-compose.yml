@@ -1,0 +1,31 @@
+# This file is part of the docker-registry-self-signed project, which
+# is distributed under the terms of the MIT License, See the project's
+# LICENSE file for details.
+#
+# Copyright (C) 2020 Allan Young
+
+version: '3'
+
+services:
+  nginx:
+    image: "nginx:1.19.0-alpine"
+    ports:
+      - 443:443
+    links:
+      - registry:registry
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/:ro
+      - ./nginx/ssl/:/etc/nginx/ssl/
+      - ./nginx/auth/:/etc/nginx/auth/
+
+  registry:
+    image: registry:2
+    ports:
+      - 127.0.0.1:5000:5000
+    environment:
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+    volumes:
+      - "regdata:/data"
+
+volumes:
+  regdata:
